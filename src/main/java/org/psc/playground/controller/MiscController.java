@@ -1,6 +1,7 @@
 package org.psc.playground.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.psc.playground.DefaultExceptionHandlerAutoConfiguration;
 import org.psc.playground.logic.MiscLogic;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
