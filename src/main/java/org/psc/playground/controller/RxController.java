@@ -37,6 +37,7 @@ public class RxController {
 
         List<String> result = Observable.zip(first, second, third,
                 (a, b, c) -> Stream.of(a, b, c).flatMap(Collection::stream).collect(Collectors.toList()))
+                .doOnError(t -> log.error(ExceptionUtils.getStackTrace(t)))
                 .first(new ArrayList<>())
                 .blockingGet();
 
