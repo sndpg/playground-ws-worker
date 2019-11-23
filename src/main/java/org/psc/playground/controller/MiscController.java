@@ -26,6 +26,11 @@ public class MiscController {
         return Map.of("status", status);
     }
 
+    @GetMapping(path = "echo")
+    public String echo(@RequestParam String value){
+        return value;
+    }
+
     @PostMapping(
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
