@@ -14,7 +14,7 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("misc")
+@RequestMapping("service/misc")
 public class MiscController {
 
     private final MiscLogic miscLogic;
