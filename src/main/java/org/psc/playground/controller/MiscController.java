@@ -3,6 +3,7 @@ package org.psc.playground.controller;
 import lombok.RequiredArgsConstructor;
 import org.psc.playground.logic.MiscLogic;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -24,6 +25,7 @@ public class MiscController {
      *
      * @return
      */
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, String> getMisc() {
         return Collections.singletonMap("status", "OK");
@@ -35,6 +37,7 @@ public class MiscController {
      * @return
      * @throws Exception
      */
+    @PreAuthorize("oauth2.hasAnyScope('read','write')")
     @GetMapping(path = "exception")
     public Map<String, String> getException() throws Exception {
         String status = miscLogic.getException();
