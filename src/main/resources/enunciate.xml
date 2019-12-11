@@ -10,5 +10,6 @@
         <jaxb disabled="true"/>
         <idl disabled="true"/>
         <java-xml-client disabled="true"/>
+        <jackson disabled="true"/>
     </modules>
 </enunciate>
