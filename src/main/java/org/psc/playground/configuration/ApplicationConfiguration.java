@@ -46,17 +46,17 @@ public class ApplicationConfiguration extends WebSecurityConfigurerAdapter imple
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.addFilterBefore(jwtAuthenticationFilter(null), UsernamePasswordAuthenticationFilter.class);
-//        httpSecurity.addFilterBefore(oncePerRequestJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//        httpSecurity.addFilterBefore(jwtAuthenticationFilter(null), UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(oncePerRequestJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
-        @Bean
+//        @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager);
         return jwtAuthenticationFilter;
     }
 
-        @Bean
+//        @Bean
     @ConditionalOnBean(JwtAuthenticationFilter.class)
     public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilterFilterRegistrationBean(
             JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -66,13 +66,13 @@ public class ApplicationConfiguration extends WebSecurityConfigurerAdapter imple
         return filterFilterRegistrationBean;
     }
 
-//    @Bean
+    @Bean
     public OncePerRequestJwtAuthenticationFilter oncePerRequestJwtAuthenticationFilter() {
         OncePerRequestJwtAuthenticationFilter jwtAuthenticationFilter = new OncePerRequestJwtAuthenticationFilter();
         return jwtAuthenticationFilter;
     }
 
-//    @Bean
+    @Bean
     @ConditionalOnBean(OncePerRequestJwtAuthenticationFilter.class)
     public FilterRegistrationBean<OncePerRequestJwtAuthenticationFilter> oncePerRequestJwtAuthenticationFilterFilterRegistrationBean(
             OncePerRequestJwtAuthenticationFilter jwtAuthenticationFilter) {
