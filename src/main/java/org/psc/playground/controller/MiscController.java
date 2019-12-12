@@ -1,11 +1,14 @@
 package org.psc.playground.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.psc.playground.logic.MiscLogic;
+import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.ReplayProcessor;
 
 import java.util.Collections;
 import java.util.Map;
@@ -20,6 +23,9 @@ import java.util.Map;
 public class MiscController {
 
     private final MiscLogic miscLogic;
+
+    @Qualifier("echoParameters")
+    private final ReplayProcessor<String> echoParameters;
 
     /**
      * Get status
@@ -53,7 +59,18 @@ public class MiscController {
      */
     @GetMapping(path = "echo")
     public String echo(@RequestParam String value) {
+        echoParameters.onNext(value + "\n");
         return value;
+    }
+
+    /**
+     * Returns all echoed parameters as a Publisher.
+     *
+     * @return
+     */
+    @GetMapping(path = "echos", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+    public Publisher<String> echos() {
+        return echoParameters.log();
     }
 
     /**
@@ -68,4 +85,5 @@ public class MiscController {
     public Map<String, Object> postMisc(@RequestBody Map<String, Object> body) {
         return body;
     }
+
 }

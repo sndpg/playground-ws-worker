@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import reactor.core.publisher.ReplayProcessor;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -81,6 +82,11 @@ public class ApplicationConfiguration extends WebSecurityConfigurerAdapter imple
         filterFilterRegistrationBean.setFilter(jwtAuthenticationFilter);
         filterFilterRegistrationBean.setEnabled(false);
         return filterFilterRegistrationBean;
+    }
+
+    @Bean
+    public ReplayProcessor<String> echoParameters() {
+        return ReplayProcessor.create(100);
     }
 
 }

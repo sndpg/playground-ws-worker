@@ -20,8 +20,10 @@ public class RandomsController implements InitializingBean {
     @MessageMapping("randomDecimals")
     public Flux<BigDecimal> randomBigDecimal() {
         return Flux.fromStream(secureRandom.doubles(0, 100).mapToObj(BigDecimal::valueOf))
+                .delayElements(Duration.ofMillis(500))
                 .doOnEach(signal -> log.info(Objects.requireNonNull(signal.get()).toPlainString()))
-                .delayElements(Duration.ofMillis(250));
+                .publish(1)
+                .autoConnect();
     }
 
     @Override
