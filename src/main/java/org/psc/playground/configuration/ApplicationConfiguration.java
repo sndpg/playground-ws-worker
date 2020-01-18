@@ -28,7 +28,7 @@ public class ApplicationConfiguration extends WebSecurityConfigurerAdapter imple
     public Docket docket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("playground")
-                .apiInfo(new ApiInfoBuilder().description("playgorund").version("1.0").build())
+                .apiInfo(new ApiInfoBuilder().description("playground").version("1.0").build())
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                 .paths(PathSelectors.any())
