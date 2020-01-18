@@ -36,7 +36,6 @@ public class ApplicationConfiguration extends WebSecurityConfigurerAdapter imple
                 .enableUrlTemplating(false);
     }
 
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 //        registry.addResourceHandler("/webjars/**")
