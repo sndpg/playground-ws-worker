@@ -2,14 +2,20 @@ package org.psc.playground.configuration;
 
 import org.psc.playground.security.JwtAuthenticationFilter;
 import org.psc.playground.security.OncePerRequestJwtAuthenticationFilter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -23,6 +29,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
+@EnableWebSecurity
 public class ApplicationConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
     @Bean
     public Docket docket() {
@@ -38,26 +45,55 @@ public class ApplicationConfiguration extends WebSecurityConfigurerAdapter imple
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("/webjars/**")
-//                .addResourceLocations("classpath:/META-INF/resources/webjars/");
-//        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
-//        registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+        //        registry.addResourceHandler("/webjars/**")
+        //                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+        //        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+        //        registry.addResourceHandler("/swagger-ui.html").addResourceLocations
+        //        ("classpath:/META-INF/resources/");
     }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity.addFilterBefore(jwtAuthenticationFilter(null), UsernamePasswordAuthenticationFilter.class);
-        httpSecurity.addFilterBefore(oncePerRequestJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        //        httpSecurity.addFilterBefore(jwtAuthenticationFilter(null), UsernamePasswordAuthenticationFilter
+        //        .class);
+        httpSecurity.httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .anonymous(httpSecurityAnonymousConfigurer -> httpSecurityAnonymousConfigurer.authenticationProvider(
+                        authenticationProvider()))
+                .userDetailsService(
+                        username -> User.builder().password("").username("test").authorities("USER").build())
+                .authenticationProvider(authenticationProvider())
+                .sessionManagement(AbstractHttpConfigurer::disable)
+                .authorizeRequests(authorizeRequest -> authorizeRequest.anyRequest().permitAll());
+        //        httpSecurity.addFilterBefore(oncePerRequestJwtAuthenticationFilter(),
+        //        UsernamePasswordAuthenticationFilter.class);
     }
 
-//        @Bean
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        return new AuthenticationProvider() {
+            @Override
+            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                return new UsernamePasswordAuthenticationToken(
+                        User.builder().password("").username("test").authorities("USER").build(), "",
+                        AuthorityUtils.createAuthorityList("USER"));
+            }
+
+            @Override
+            public boolean supports(Class<?> authentication) {
+                return true;
+            }
+        };
+    }
+
+    //        @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager);
         return jwtAuthenticationFilter;
     }
 
-//        @Bean
-    @ConditionalOnBean(JwtAuthenticationFilter.class)
+    //        @Bean
+    //    @ConditionalOnBean(JwtAuthenticationFilter.class)
     public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilterFilterRegistrationBean(
             JwtAuthenticationFilter jwtAuthenticationFilter) {
         FilterRegistrationBean<JwtAuthenticationFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
@@ -66,14 +102,14 @@ public class ApplicationConfiguration extends WebSecurityConfigurerAdapter imple
         return filterFilterRegistrationBean;
     }
 
-    @Bean
+    //    @Bean
     public OncePerRequestJwtAuthenticationFilter oncePerRequestJwtAuthenticationFilter() {
         OncePerRequestJwtAuthenticationFilter jwtAuthenticationFilter = new OncePerRequestJwtAuthenticationFilter();
         return jwtAuthenticationFilter;
     }
 
-    @Bean
-    @ConditionalOnBean(OncePerRequestJwtAuthenticationFilter.class)
+    //    @Bean
+    //    @ConditionalOnBean(OncePerRequestJwtAuthenticationFilter.class)
     public FilterRegistrationBean<OncePerRequestJwtAuthenticationFilter> oncePerRequestJwtAuthenticationFilterFilterRegistrationBean(
             OncePerRequestJwtAuthenticationFilter jwtAuthenticationFilter) {
         FilterRegistrationBean<OncePerRequestJwtAuthenticationFilter> filterFilterRegistrationBean =
