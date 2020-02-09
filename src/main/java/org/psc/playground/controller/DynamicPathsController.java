@@ -1,12 +1,13 @@
 package org.psc.playground.controller;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping("dynamic")
@@ -22,7 +24,10 @@ public class DynamicPathsController {
     private Map<ResponseConfigKey, ResponseConfig> responseConfigMap = new ConcurrentHashMap<>(100);
 
     @GetMapping(path = "/{path}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getMapping(@PathVariable String path) {
+    public ResponseEntity<String> getMapping(@PathVariable String path,
+            @RequestParam LinkedMultiValueMap<String, Object> requestParameters) {
+
+        requestParameters.forEach((key, value) -> log.info("{}: {}", key, value));
         ResponseConfig responseConfig =
                 responseConfigMap.get(ResponseConfigKey.builder().method(HttpMethod.GET).path(path).build());
 
