@@ -1,37 +1,49 @@
 package org.psc.playground.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 @CrossOrigin
 @RestController
 @RequestMapping("dynamic")
 public class DynamicPathsController {
 
+    private final ObjectMapper objectMapper;
+
     private Map<ResponseConfigKey, ResponseConfig> responseConfigMap = new ConcurrentHashMap<>(100);
 
     @GetMapping(path = "/{path}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getMapping(@PathVariable String path,
-            @RequestParam LinkedMultiValueMap<String, Object> requestParameters) {
+    public ResponseEntity<Object> getMapping(@PathVariable String path,
+            @RequestParam MultiValueMap<String, Object> requestParams) throws JsonProcessingException {
 
-        requestParameters.forEach((key, value) -> log.info("{}: {}", key, value));
+        requestParams.forEach((key, value) -> log.info("{}: {}", key, value));
         ResponseConfig responseConfig =
                 responseConfigMap.get(ResponseConfigKey.builder().method(HttpMethod.GET).path(path).build());
 
-        return ResponseEntity.status(responseConfig.httpStatus).body(responseConfig.content);
+        return ResponseEntity.status(responseConfig.getHttpStatus())
+                .body(resolveContent(requestParams, responseConfig.getContent()));
     }
 
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -41,9 +53,22 @@ public class DynamicPathsController {
                 .path(getUniqueMappingKey())
                 .build();
 
+        // list needs to be mutable
+        @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "unchecked"})
+        Map<String, List<Object>> requestParams =
+                ((Map<String, Object>) requestBody.getOrDefault("requestParams", new ConcurrentHashMap<>())).entrySet()
+                        .stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, entry -> Arrays.asList(entry.getValue())
+                                , (a, b) -> {
+                                    a.addAll(b);
+                                    return a;
+                                }));
+
+        //noinspection unchecked
         ResponseConfig responseConfig = ResponseConfig.builder()
                 .content((String) requestBody.getOrDefault("response", ""))
                 .httpStatus(HttpStatus.resolve(Integer.parseInt((String) requestBody.getOrDefault("httpStatus", 200))))
+                .requestParams(new LinkedMultiValueMap<>(requestParams))
                 .build();
 
         responseConfigMap.put(responseConfigKey, responseConfig);
@@ -67,6 +92,46 @@ public class DynamicPathsController {
         return generatedKey;
     }
 
+    private Object resolveContent(MultiValueMap<String, Object> requestParams, String responseContent) throws
+            JsonProcessingException {
+        Map<String, Object> responseContentTree = objectMapper.readValue(responseContent,
+                new TypeReference<>() {});
+
+        ExpressionParser expressionParser = new SpelExpressionParser();
+        EvaluationContext evaluationContext = SimpleEvaluationContext.forReadWriteDataBinding().build();
+
+        evaluationContext.setVariable("requestParams", requestParams);
+
+        resolveExpression(responseContentTree.entrySet(), expressionParser, evaluationContext);
+
+        return objectMapper.writeValueAsString(responseContentTree);
+    }
+
+    private void resolveExpression(Set<Map.Entry<String, Object>> responseContentEntries,
+            ExpressionParser expressionParser, EvaluationContext evaluationContext) {
+        for (Map.Entry<String, Object> responseContentEntry : responseContentEntries) {
+            if (responseContentEntry.getValue() instanceof Map) {
+                //noinspection unchecked
+                resolveExpression(((Map<String, Object>) responseContentEntry.getValue()).entrySet(), expressionParser,
+                        evaluationContext);
+            } else if (responseContentEntry.getValue() instanceof String &&
+                    ((String) responseContentEntry.getValue()).startsWith("#")) {
+                //noinspection unchecked
+                String resolvedExpression =
+                        ((List<String>) expressionParser.parseExpression((String) responseContentEntry.getValue())
+                                .getValue(evaluationContext)).get(0);
+
+                // for now, just create a Number and let jackson figure out which actual type to write into the
+                // response
+                if (NumberUtils.isCreatable(resolvedExpression)) {
+                    responseContentEntry.setValue(NumberUtils.createNumber(resolvedExpression));
+                } else {
+                    responseContentEntry.setValue(resolvedExpression);
+                }
+            }
+        }
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -83,6 +148,7 @@ public class DynamicPathsController {
     @With
     @Builder
     private static class ResponseConfig {
+        private MultiValueMap<String, Object> requestParams;
         private String content;
         private HttpStatus httpStatus;
     }
