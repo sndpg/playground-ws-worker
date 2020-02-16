@@ -64,7 +64,6 @@ public class DynamicPathsController {
                                     return a;
                                 }));
 
-        //noinspection unchecked
         ResponseConfig responseConfig = ResponseConfig.builder()
                 .content((String) requestBody.getOrDefault("response", ""))
                 .httpStatus(HttpStatus.resolve(Integer.parseInt((String) requestBody.getOrDefault("httpStatus", 200))))
