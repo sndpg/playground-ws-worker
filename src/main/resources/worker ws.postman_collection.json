@@ -1,0 +1,275 @@
+{
+	"info": {
+		"_postman_id": "49685dbe-9802-472a-bd95-ab22ccfc0951",
+		"name": "worker ws",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "misc/dto",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/service/misc/dto?id=123&description=a generic dto&status=200&value=5.1234",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"service",
+						"misc",
+						"dto"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "123"
+						},
+						{
+							"key": "description",
+							"value": "a generic dto"
+						},
+						{
+							"key": "status",
+							"value": "200"
+						},
+						{
+							"key": "value",
+							"value": "5.1234"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "misc/echo",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0e98d945-7f65-4bcd-8b53-db52759f895e",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/service/misc/echo?value=1524",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"service",
+						"misc",
+						"echo"
+					],
+					"query": [
+						{
+							"key": "value",
+							"value": "1524"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register mock",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"method\": \"GET\",\r\n\t\"response\": \"{ \\\"test\\\" 123456, \\\"name\\\": \\\"xadsad\\\", \\\"numericFromRequestParams\\\": #requestParams.numericValue }\",\r\n\t\"requestParams\": {\r\n\t\t\"numericValue\" : 2135,\r\n\t\t\"stringValue\" : \"hello\",\r\n\t\t\"listValue\": [\"this\", \"is\", \"a\", \"list\"]\r\n\t}, \r\n\t\"httpStatus\": \"200\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/dynamic/register",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"dynamic",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/dynamic/EAhqDjYl",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/dynamic/EAhqDjYl",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"dynamic",
+						"EAhqDjYl"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/dynamic/NcJPlRsQ",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/dynamic/NcJPlRsQ",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"dynamic",
+						"NcJPlRsQ"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "jackson propety resolution testing",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"1234a\",\n\t\"userName\": \"user\",\n\t\"value\": 1.2345,\n\t\"text\": \"I'm a text value!\",\n\t\"date\": \"2020-02-16\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/jackson/properties/misc/default",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jackson",
+						"properties",
+						"misc",
+						"default"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "jackson propety resolution testing snek",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"1234a\",\n\t\"user_name\": \"user\",\n\t\"value\": 1.2345,\n\t\"secondary_value\": -777.5264,\n\t\"text\": \"I'm a text value!\",\n\t\"date\": \"2020-02-16\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/jackson/properties/misc/snakecase",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jackson",
+						"properties",
+						"misc",
+						"snakecase"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "jackson propety resolution testing snek Copy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"entityId\": \"1234a\",\n\t\"userId\": \"user\",\n\t\"openAmount\": 1.2345,\n\t\"payedAmount\": -777.5264,\n\t\"text\": \"I'm a text value!\",\n\t\"date\": \"2020-02-16\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/jackson/properties/misc/customized",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jackson",
+						"properties",
+						"misc",
+						"customized"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
