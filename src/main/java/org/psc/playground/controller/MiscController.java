@@ -32,7 +32,7 @@ public class MiscController {
      *
      * @return
      */
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, String> getMisc() {
         return Collections.singletonMap("status", "OK");

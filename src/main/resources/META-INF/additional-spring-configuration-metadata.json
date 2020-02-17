@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "application.security.enable-method-security",
+      "type": "java.lang.Boolean",
+      "description": "Whether or not to enable method security."
+  }
+] }
