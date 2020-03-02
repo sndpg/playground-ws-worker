@@ -45,10 +45,11 @@ public class RedirectController {
         return new RestTemplate(httpComponentsClientHttpRequestFactory);
     }
 
-
     @GetMapping("posts")
     public ResponseEntity<String> getRedirect() throws CertificateException, NoSuchAlgorithmException,
             KeyStoreException, KeyManagementException, IOException {
+        //noinspection SpringConfigurationProxyMethods
         return sslRestTemplate().getForEntity("https://jsonplaceholder.typicode.com/posts", String.class);
     }
+
 }
