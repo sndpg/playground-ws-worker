@@ -18,6 +18,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.keycloak.bom</groupId>
+                <artifactId>keycloak-adapter-bom</artifactId>
+                <version>9.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -35,6 +42,14 @@
                     <groupId>org.hibernate.validator</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-security-adapter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -142,31 +157,43 @@
                 </goals>
             </plugin>
             <plugin>
-                <groupId>com.webcohesion.enunciate</groupId>
-                <artifactId>enunciate-maven-plugin</artifactId>
-                <version>2.12.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>docs</goal>
-                        </goals>
-                        <configuration>
-                            <configFile>${project.basedir}/src/main/resources/enunciate.xml</configFile>
-                            <docsDir>${project.build.directory}/classes/static</docsDir>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>13</source>
                     <target>13</target>
+                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>enunciate</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.webcohesion.enunciate</groupId>
+                        <artifactId>enunciate-maven-plugin</artifactId>
+                        <version>2.12.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>docs</goal>
+                                </goals>
+                                <configuration>
+                                    <configFile>${project.basedir}/src/main/resources/enunciate.xml</configFile>
+                                    <docsDir>${project.build.directory}/classes/static</docsDir>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
