@@ -7,7 +7,7 @@
     },
     {
       "name": "application.security.enable-keycloak-security",
-      "type": "java.lang.String",
+      "type": "java.lang.Boolean",
       "description": "Whether or not to enable keycloak for spring security."
     }
   ] }
