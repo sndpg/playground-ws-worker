@@ -6,10 +6,12 @@ import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.ReplayProcessor;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.Map;
 
@@ -58,9 +60,11 @@ public class MiscController {
      * @return
      */
     @GetMapping(path = "echo")
-    public String echo(@RequestParam String value) {
+    public Map<String, String> echo(@RequestParam String value) {
         echoParameters.onNext(value + "\n");
-        return value;
+        Principal principal = (Principal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return Map.of("userId", principal.getName(),
+                "value", value);
     }
 
     /**

@@ -20,8 +20,8 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.List;
 
-@Configuration
-@EnableWebSecurity
+//@Configuration
+//@EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
