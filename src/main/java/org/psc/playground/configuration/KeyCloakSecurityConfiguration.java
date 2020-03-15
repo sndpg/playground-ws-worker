@@ -27,9 +27,10 @@ public class KeyCloakSecurityConfiguration extends KeycloakWebSecurityConfigurer
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
      */
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) {
-        // TODO: add custom AuthenticationProvider
-        auth.authenticationProvider(keycloakAuthenticationProvider());
+    public void configureGlobal(AuthenticationManagerBuilder auth,
+            WsWorkerKeyCloakAuthenticationProvider wsWorkerKeyCloakAuthenticationProvider) {
+        //        auth.authenticationProvider(keycloakAuthenticationProvider());
+        auth.authenticationProvider(wsWorkerKeyCloakAuthenticationProvider);
     }
 
     /**
