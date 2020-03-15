@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link Configuration} for KeyCloak-Integration
  */
 @Configuration
-public class KeyCloakConfiguration {
+public class KeycloakConfiguration {
 
     /**
      * Bug?: https://stackoverflow.com/questions/57787768/issues-running-example-keycloak-spring-boot-app

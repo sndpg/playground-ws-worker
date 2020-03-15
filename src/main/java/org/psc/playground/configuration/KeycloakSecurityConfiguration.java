@@ -21,14 +21,14 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @KeycloakConfiguration
 @ConditionalOnProperty(value = "application.security.enable-keycloak-security", havingValue = "true")
-public class KeyCloakSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
+public class KeycloakSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
 
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
      */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth,
-            WsWorkerKeyCloakAuthenticationProvider wsWorkerKeyCloakAuthenticationProvider) {
+            WsWorkerKeycloakAuthenticationProvider wsWorkerKeyCloakAuthenticationProvider) {
         //        auth.authenticationProvider(keycloakAuthenticationProvider());
         auth.authenticationProvider(wsWorkerKeyCloakAuthenticationProvider);
     }
