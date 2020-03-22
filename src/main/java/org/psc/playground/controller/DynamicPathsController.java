@@ -109,6 +109,7 @@ public class DynamicPathsController {
     private void resolveExpression(Set<Map.Entry<String, Object>> responseContentEntries,
             ExpressionParser expressionParser, EvaluationContext evaluationContext) {
         for (Map.Entry<String, Object> responseContentEntry : responseContentEntries) {
+            // TODO: Java 14 instanceof pattern matching
             if (responseContentEntry.getValue() instanceof Map) {
                 //noinspection unchecked
                 resolveExpression(((Map<String, Object>) responseContentEntry.getValue()).entrySet(), expressionParser,
