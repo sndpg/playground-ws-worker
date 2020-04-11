@@ -67,6 +67,16 @@ public class MiscController {
                 "value", value);
     }
 
+//    /**
+//     * GETs an arbitraty {@link playground.domain.Information}-Object
+//     *
+//     * @return
+//     */
+//    @GetMapping(path = "information")
+//    public Information getInformation() {
+//        return new Information(new Random().nextLong(), "info", "empty");
+//    }
+
     /**
      * Returns all echoed parameters as a Publisher.
      *
