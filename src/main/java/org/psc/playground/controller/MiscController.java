@@ -62,8 +62,16 @@ public class MiscController {
     @GetMapping(path = "echo")
     public Map<String, String> echo(@RequestParam String value) {
         echoParameters.onNext(value + "\n");
-        Principal principal = (Principal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return Map.of("userId", principal.getName(),
+
+        Object principalObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userId;
+        if (principalObject instanceof Principal principal){
+            userId = principal.getName();
+        } else {
+            userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        }
+
+        return Map.of("userId", userId,
                 "value", value);
     }
 
