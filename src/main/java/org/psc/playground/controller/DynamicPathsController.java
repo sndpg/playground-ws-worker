@@ -32,7 +32,7 @@ public class DynamicPathsController {
 
     private final ObjectMapper objectMapper;
 
-    private Map<ResponseConfigKey, ResponseConfig> responseConfigMap = new ConcurrentHashMap<>(100);
+    private final Map<ResponseConfigKey, ResponseConfig> responseConfigMap = new ConcurrentHashMap<>(100);
 
     @GetMapping(path = "/{path}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getMapping(@PathVariable String path,
