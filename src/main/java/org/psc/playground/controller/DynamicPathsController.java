@@ -106,20 +106,31 @@ public class DynamicPathsController {
         return objectMapper.writeValueAsString(responseContentTree);
     }
 
+    /**
+     * Resolves a simple SpEL-expression within the responseContentEntries, which allows to reference requestParams of
+     * the current request within the given evaluationContext ({@code requestParams}-Map has to be set as a variable in
+     * the evaluationContext).
+     *
+     * @param responseContentEntries the entries of the response which has been registered on this path and potentially
+     *                               contains simple SpEL-expressions which can reference values from the requestParams
+     *                               of the current request
+     * @param expressionParser       for parsing expressions
+     * @param evaluationContext      evaluationContext in which the variable {@code requestParams} has been set with the
+     *                               values of the current requestParams has been set
+     */
     private void resolveExpression(Set<Map.Entry<String, Object>> responseContentEntries,
             ExpressionParser expressionParser, EvaluationContext evaluationContext) {
         for (Map.Entry<String, Object> responseContentEntry : responseContentEntries) {
-            // TODO: Java 14 instanceof pattern matching
-            if (responseContentEntry.getValue() instanceof Map) {
+            if (responseContentEntry.getValue() instanceof Map subEntries) {
                 //noinspection unchecked
-                resolveExpression(((Map<String, Object>) responseContentEntry.getValue()).entrySet(), expressionParser,
-                        evaluationContext);
-            } else if (responseContentEntry.getValue() instanceof String &&
-                    ((String) responseContentEntry.getValue()).startsWith("#")) {
+                resolveExpression(subEntries.entrySet(), expressionParser, evaluationContext);
+            } else if (responseContentEntry.getValue() instanceof String currentValue &&
+                    currentValue.startsWith("#")) {
                 //noinspection unchecked
                 String resolvedExpression =
-                        ((List<String>) expressionParser.parseExpression((String) responseContentEntry.getValue())
-                                .getValue(evaluationContext)).get(0);
+                        ((List<String>) expressionParser.parseExpression(currentValue)
+                                .getValue(evaluationContext))
+                                .get(0);
 
                 // for now, just create a Number and let jackson figure out which actual type to write into the
                 // response
