@@ -3,6 +3,7 @@ package org.psc.playground.controller;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -72,6 +74,41 @@ public class JacksonPlaygroundController {
             MediaType.APPLICATION_JSON_VALUE)
     public MiscDto postMiscDtoFromCustomizedRawJson(@RequestBody String body) throws JsonProcessingException {
         return customPropertiesObjectMapper.readValue(body, MiscDto.class);
+    }
+
+    @PostMapping(value = "misc/escapes", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+            MediaType.APPLICATION_JSON_VALUE)
+    public String postWithEscapedCharacters(@RequestBody String body) throws JsonProcessingException {
+        Map<String, Object> tree = objectMapper.readValue(body, new TypeReference<>() {});
+
+        transformTree(tree);
+
+        return objectMapper.writeValueAsString(tree);
+    }
+
+    private void transformTree(Map<String, Object> tree) {
+        for (Map.Entry<String, Object> current : tree.entrySet()) {
+            transformNodes(current);
+        }
+    }
+
+    private void transformNodes(Map.Entry<String, Object> current) {
+        if (current.getValue() != null && current.getValue() instanceof String) {
+            current.setValue(transformValue((String) current.getValue()));
+        } else if (current.getValue() instanceof List) {
+            List<Object> currentValues = (List<Object>) current.getValue();
+            for (int i = 0; i < currentValues.size(); i++) {
+                if (currentValues.get(i) instanceof String) {
+                    currentValues.set(i, transformValue((String) currentValues.get(i)));
+                }
+            }
+        } else if (current.getValue() instanceof Map) {
+            transformTree((Map<String, Object>) current.getValue());
+        }
+    }
+
+    private String transformValue(String value) {
+        return "TEXT: " + value;
     }
 
     private static class CustomMiscDtoPropertyNamingStrategy extends PropertyNamingStrategy.PropertyNamingStrategyBase {
