@@ -8,4 +8,5 @@ public class MiscLogic {
     public String getException() throws Exception {
         throw new Exception("an exception");
     }
+
 }
