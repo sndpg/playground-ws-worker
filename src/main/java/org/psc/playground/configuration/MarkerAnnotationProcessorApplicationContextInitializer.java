@@ -9,11 +9,14 @@ import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
@@ -25,7 +28,8 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Configuration
-public class MarkerAnnotationProcessorConfiguration {
+public class MarkerAnnotationProcessorApplicationContextInitializer implements
+        ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
     private static final Constructor<?> ANNOTATION_DATA_CONSTRUCTOR;
     private static final VarHandle ANNOTATION_DATA;
@@ -69,7 +73,7 @@ public class MarkerAnnotationProcessorConfiguration {
         }
     }
 
-    @Bean
+    //    @Bean
     public ApplicationRunner classMarkerAnnotationProcessor() {
         return args -> {
             //   Reflections reflections = new Reflections();
@@ -145,93 +149,99 @@ public class MarkerAnnotationProcessorConfiguration {
         };
     }
 
-    @Bean
-    @Order(Ordered.LOWEST_PRECEDENCE - 1)
-    public ApplicationRunner proxyingFieldMarkerAnnotationProcessor() {
-        return args -> {
-            Reflections reflections =
-                    new Reflections(new FieldAnnotationsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner());
-            List<Class<?>> typesWithMarkedFields = reflections.getFieldsAnnotatedWith(FieldMarker.class)
-                    .stream()
-                    .map(Field::getDeclaringClass)
-                    .distinct()
-                    .collect(Collectors.toList());
+//    @Autowired
+    @Override
+    public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Reflections reflections =
+                new Reflections(
+                        new ConfigurationBuilder().addClassLoader(classLoader)
+                                .addUrls(ClasspathHelper.forPackage("org.psc"))
+                                .addScanners(new FieldAnnotationsScanner(),
+                                        new TypeAnnotationsScanner(),
+                                        new SubTypesScanner()));
+        List<Class<?>> typesWithMarkedFields = reflections.getFieldsAnnotatedWith(FieldMarker.class)
+                .stream()
+                .map(Field::getDeclaringClass)
+                .distinct()
+                .collect(Collectors.toList());
 
-            Set<Class<?>> markedTypes = reflections.getTypesAnnotatedWith(ClassMarker.class);
+        Set<Class<?>> markedTypes = reflections.getTypesAnnotatedWith(ClassMarker.class);
 
-            Stream.concat(typesWithMarkedFields.stream(), markedTypes.stream())
-                    .peek(clazz -> log.info("all marked types: {}", clazz.getName()))
-                    .distinct()
-                    .peek(clazz -> log.info("distinct marked types: {}", clazz.getName()))
-                    .forEach(clazz -> {
-                        Field[] fields = clazz.getDeclaredFields();
-                        for (int i = 0; i < fields.length; i++) {
-                            try {
-                                FieldMarker fieldMarker = fields[i].getDeclaredAnnotation(FieldMarker.class);
-                                int position = i + 1;
+        Stream.concat(typesWithMarkedFields.stream(), markedTypes.stream())
+                .peek(clazz -> log.info("all marked types: {}", clazz.getName()))
+                .distinct()
+                .peek(clazz -> log.info("distinct marked types: {}", clazz.getName()))
+                .forEach(clazz -> {
+                    Field[] fields = clazz.getDeclaredFields();
+                    for (int i = 0; i < fields.length; i++) {
+                        try {
+                            FieldMarker fieldMarker = fields[i].getDeclaredAnnotation(FieldMarker.class);
+                            int position = i + 1;
 
-                                FieldMarker overridingFieldMarker = fieldMarker == null ? createFieldMarkerAnnotation(
-                                        position) : createFieldMarkerAnnotation(fieldMarker, position);
-                                Method method = fields[i].getClass().getDeclaredMethod("declaredAnnotations");
-                                method.setAccessible(true);
+                            FieldMarker overridingFieldMarker = fieldMarker == null ? createFieldMarkerAnnotation(
+                                    position) : createFieldMarkerAnnotation(fieldMarker, position);
+                            Method method = fields[i].getClass().getDeclaredMethod("declaredAnnotations");
+                            method.setAccessible(true);
 
-                                Map<Class<? extends Annotation>, Annotation> annotationsMap =
-                                        (Map<Class<? extends Annotation>, Annotation>) method.invoke(fields[i]);
+                            Map<Class<? extends Annotation>, Annotation> annotationsMap =
+                                    (Map<Class<? extends Annotation>, Annotation>) method.invoke(fields[i]);
 
-                                if (annotationsMap.isEmpty()) {
-                                    annotationsMap = new HashMap<>();
-                                    Field root = (Field) ROOT_FIELD.get(fields[i]);
-                                    DECLARED_ANNOTATIONS.set(fields[i], annotationsMap);
-                                    DECLARED_ANNOTATIONS.set(root, annotationsMap);
+                            if (annotationsMap.isEmpty()) {
+                                annotationsMap = new HashMap<>();
+                                Field root = (Field) ROOT_FIELD.get(fields[i]);
+                                DECLARED_ANNOTATIONS.set(fields[i], annotationsMap);
+                                DECLARED_ANNOTATIONS.set(root, annotationsMap);
 
-                                    // test with Java 8:
-                                    // Field declaredAnnotations = Field.class.getDeclaredField("declaredAnnotations");
-                                    // declaredAnnotations.set(fields[i], annotationsMap);
-                                    annotationsMap.put(FieldMarker.class, overridingFieldMarker);
-
-
-                                    //                                    Map<Class<? extends Annotation>,
-                                    //                                    Annotation> test =
-                                    //                                            (Map<Class<? extends Annotation>,
-                                    //                                            Annotation>) method.invoke(fields[i]);
-                                    //
-                                    //                                    int redefinedCount = (int) REDEFINED_COUNT
-                                    //                                    .get(fields[i].getClass());
-                                    //                                    int rootRedefinedCount = (int)
-                                    //                                    REDEFINED_COUNT.get(root.getClass());
-                                    //
-                                    //                                    ANNOTATION_DATA.set(fields[i].getClass(),
-                                    //                                            ANNOTATION_DATA_CONSTRUCTOR
-                                    //                                            .newInstance(annotationsMap,
-                                    //                                            annotationsMap,
-                                    //                                                    redefinedCount));
-                                    //
-                                    //                                    ANNOTATION_DATA.set(root.getClass(),
-                                    //                                            ANNOTATION_DATA_CONSTRUCTOR
-                                    //                                            .newInstance(annotationsMap,
-                                    //                                            annotationsMap,
-                                    //                                                    rootRedefinedCount));
-                                    //
-                                    //                                    addAnnotations(fields[i].getClass(),
-                                    //                                    annotationsMap);
-                                    //                                    addAnnotations(root.getClass(),
-                                    //                                    annotationsMap);
-
-                                    log.info("");
-                                } else {
-                                    annotationsMap.put(FieldMarker.class, overridingFieldMarker);
-
-                                }
+                                // test with Java 8:
+                                // Field declaredAnnotations = Field.class.getDeclaredField("declaredAnnotations");
+                                // declaredAnnotations.set(fields[i], annotationsMap);
+                                annotationsMap.put(FieldMarker.class, overridingFieldMarker);
 
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                                //                                    Map<Class<? extends Annotation>,
+                                //                                    Annotation> test =
+                                //                                            (Map<Class<? extends Annotation>,
+                                //                                            Annotation>) method.invoke(fields[i]);
+                                //
+                                //                                    int redefinedCount = (int) REDEFINED_COUNT
+                                //                                    .get(fields[i].getClass());
+                                //                                    int rootRedefinedCount = (int)
+                                //                                    REDEFINED_COUNT.get(root.getClass());
+                                //
+                                //                                    ANNOTATION_DATA.set(fields[i].getClass(),
+                                //                                            ANNOTATION_DATA_CONSTRUCTOR
+                                //                                            .newInstance(annotationsMap,
+                                //                                            annotationsMap,
+                                //                                                    redefinedCount));
+                                //
+                                //                                    ANNOTATION_DATA.set(root.getClass(),
+                                //                                            ANNOTATION_DATA_CONSTRUCTOR
+                                //                                            .newInstance(annotationsMap,
+                                //                                            annotationsMap,
+                                //                                                    rootRedefinedCount));
+                                //
+                                //                                    addAnnotations(fields[i].getClass(),
+                                //                                    annotationsMap);
+                                //                                    addAnnotations(root.getClass(),
+                                //                                    annotationsMap);
+
+                                log.info("");
+                            } else {
+                                annotationsMap.put(FieldMarker.class, overridingFieldMarker);
+
                             }
-                        }
-                    });
 
-        };
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
     }
+
+    ;
 
     private FieldMarker createFieldMarkerAnnotation(int position) {
         return new FieldMarker() {
@@ -310,6 +320,11 @@ public class MarkerAnnotationProcessorConfiguration {
         InvocationHandler handler = new AnnotationInvocationHandler(annotation, attributeName, newValue);
         return (Annotation) Proxy.newProxyInstance(annotation.getClass().getClassLoader(),
                 new Class[]{annotationType}, handler);
+    }
+
+    @Override
+    public int getOrder() {
+        return 0;
     }
 
     public static class AnnotationInvocationHandler implements InvocationHandler {
