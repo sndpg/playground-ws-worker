@@ -56,11 +56,12 @@ public class MiscController {
     /**
      * Echoes the request
      *
+     * @param headers
      * @param value
      * @return
      */
     @GetMapping(path = "echo")
-    public Map<String, String> echo(@RequestParam String value) {
+    public Map<String, Object> echo(@RequestHeader Map<String, String> headers, @RequestParam String value) {
         echoParameters.onNext(value + "\n");
 
         Object principalObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -72,7 +73,8 @@ public class MiscController {
         }
 
         return Map.of("userId", userId,
-                "value", value);
+                "value", value,
+                "headers", headers);
     }
 
 //    /**
