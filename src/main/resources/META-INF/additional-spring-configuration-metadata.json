@@ -12,7 +12,7 @@
     },
     {
       "name": "application.filter.misc-filter.enable",
-      "type": "java.lang.String",
+      "type": "java.lang.Boolean",
       "description": "Whether or not to enable the MiscFilter (prpends /api to request path)."
     }
   ] }

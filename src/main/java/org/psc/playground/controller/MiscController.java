@@ -1,6 +1,7 @@
 package org.psc.playground.controller;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.psc.playground.logic.MiscLogic;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +19,7 @@ import java.util.Map;
 /**
  * Controller for misc stuff
  */
+@Slf4j
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -64,9 +66,16 @@ public class MiscController {
     public Map<String, Object> echo(@RequestHeader Map<String, String> headers, @RequestParam String value) {
         echoParameters.onNext(value + "\n");
 
+        log.info("request param: {}", value);
+
+        if (log.isDebugEnabled()) {
+            log.debug("request headers:");
+            headers.forEach((headerKey, headerValue) -> log.debug("{}: {}", headerKey, headerValue));
+        }
+
         Object principalObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userId;
-        if (principalObject instanceof Principal principal){
+        if (principalObject instanceof Principal principal) {
             userId = principal.getName();
         } else {
             userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -77,15 +86,15 @@ public class MiscController {
                 "headers", headers);
     }
 
-//    /**
-//     * GETs an arbitraty {@link playground.domain.Information}-Object
-//     *
-//     * @return
-//     */
-//    @GetMapping(path = "information")
-//    public Information getInformation() {
-//        return new Information(new Random().nextLong(), "info", "empty");
-//    }
+    //    /**
+    //     * GETs an arbitraty {@link playground.domain.Information}-Object
+    //     *
+    //     * @return
+    //     */
+    //    @GetMapping(path = "information")
+    //    public Information getInformation() {
+    //        return new Information(new Random().nextLong(), "info", "empty");
+    //    }
 
     /**
      * Returns all echoed parameters as a Publisher.
