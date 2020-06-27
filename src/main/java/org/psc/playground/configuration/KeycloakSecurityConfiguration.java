@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @KeycloakConfiguration
+@Order(50)
 @ConditionalOnProperty(value = "application.security.enable-keycloak-security", havingValue = "true")
 public class KeycloakSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
 

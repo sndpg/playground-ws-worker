@@ -5,6 +5,7 @@ import org.psc.playground.security.OncePerRequestJwtAuthenticationFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,8 +21,9 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.List;
 
-//@Configuration
-//@EnableWebSecurity
+@Configuration
+@EnableWebSecurity
+@Order(200)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
