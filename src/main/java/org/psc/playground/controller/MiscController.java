@@ -6,15 +6,19 @@ import org.psc.playground.logic.MiscLogic;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import reactor.core.publisher.ReplayProcessor;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controller for misc stuff
@@ -133,6 +137,17 @@ public class MiscController {
                 .description(miscDtoAttributes.get("description"))
                 .status(Integer.parseInt(miscDtoAttributes.get("status")))
                 .value(BigDecimal.valueOf(Double.parseDouble(miscDtoAttributes.get("value")))).build();
+    }
+
+    @PostMapping("locations")
+    public ResponseEntity<Map<String, Object>> postLocation(@RequestBody Map<String, Object> location) {
+        URI locationUri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{locationId}")
+                .build(location.get("id"));
+        // scenario for Optional mapping
+        return Optional.of(location)
+                .map(body -> ResponseEntity.created(locationUri).body(body))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Data
