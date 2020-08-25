@@ -1,5 +1,7 @@
 package org.psc.playground.configuration;
 
+import io.woof.database.QueryResolver;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,9 +15,24 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+@Slf4j
 @Configuration
 @EnableSwagger2
 public class ApplicationConfiguration implements WebMvcConfigurer {
+
+    @Bean
+    public QueryResolver queryResolver() {
+        QueryResolver resolvedQueries = QueryResolver.builder()
+                .resource("queries")
+                .build();
+
+        resolvedQueries.getStatement("queries/selectOne").ifPresent(statement -> log.info("selectOne: {}", statement));
+        resolvedQueries.getStatement("queries/test/selectAnotherOne")
+                .ifPresent(statement -> log.info("selectAnotherOne: {}", statement));
+
+        return resolvedQueries;
+    }
+
     @Bean
     public Docket docket() {
         return new Docket(DocumentationType.SWAGGER_2)
