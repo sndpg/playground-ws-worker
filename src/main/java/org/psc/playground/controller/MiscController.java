@@ -1,5 +1,6 @@
 package org.psc.playground.controller;
 
+import io.woof.database.QueryResolver;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.psc.playground.logic.MiscLogic;
@@ -32,8 +33,15 @@ public class MiscController {
 
     private final MiscLogic miscLogic;
 
+    private final QueryResolver queryResolver;
+
     @Qualifier("echoParameters")
     private final ReplayProcessor<String> echoParameters;
+
+    @GetMapping("queries")
+    public ResponseEntity<Map<String, String>> getQuery(@RequestParam String queryName) {
+        return ResponseEntity.of(queryResolver.getStatement(queryName).map(query -> Map.of(queryName, query)));
+    }
 
     /**
      * Get status
