@@ -121,6 +121,7 @@ public class DynamicPathsController {
     private void resolveExpression(Set<Map.Entry<String, Object>> responseContentEntries,
             ExpressionParser expressionParser, EvaluationContext evaluationContext) {
         for (Map.Entry<String, Object> responseContentEntry : responseContentEntries) {
+            //noinspection rawtypes
             if (responseContentEntry.getValue() instanceof Map subEntries) {
                 //noinspection unchecked
                 resolveExpression(subEntries.entrySet(), expressionParser, evaluationContext);
@@ -128,8 +129,9 @@ public class DynamicPathsController {
                     currentValue.startsWith("#")) {
                 //noinspection unchecked
                 String resolvedExpression =
-                        ((List<String>) expressionParser.parseExpression(currentValue)
-                                .getValue(evaluationContext))
+                        ((List<String>) Objects.requireNonNull(expressionParser
+                                .parseExpression(currentValue)
+                                .getValue(evaluationContext)))
                                 .get(0);
 
                 // for now, just create a Number and let jackson figure out which actual type to write into the

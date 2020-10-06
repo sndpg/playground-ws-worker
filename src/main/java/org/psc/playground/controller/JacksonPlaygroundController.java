@@ -96,13 +96,14 @@ public class JacksonPlaygroundController {
         if (current.getValue() != null && current.getValue() instanceof String) {
             current.setValue(transformValue((String) current.getValue()));
         } else if (current.getValue() instanceof List) {
-            List<Object> currentValues = (List<Object>) current.getValue();
+            @SuppressWarnings("unchecked") List<Object> currentValues = (List<Object>) current.getValue();
             for (int i = 0; i < currentValues.size(); i++) {
                 if (currentValues.get(i) instanceof String) {
                     currentValues.set(i, transformValue((String) currentValues.get(i)));
                 }
             }
         } else if (current.getValue() instanceof Map) {
+            //noinspection unchecked
             transformTree((Map<String, Object>) current.getValue());
         }
     }

@@ -67,8 +67,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     //        @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(AuthenticationManager authenticationManager) {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager);
-        return jwtAuthenticationFilter;
+        return new JwtAuthenticationFilter(authenticationManager);
     }
 
     //        @Bean
@@ -83,8 +82,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     //    @Bean
     public OncePerRequestJwtAuthenticationFilter oncePerRequestJwtAuthenticationFilter() {
-        OncePerRequestJwtAuthenticationFilter jwtAuthenticationFilter = new OncePerRequestJwtAuthenticationFilter();
-        return jwtAuthenticationFilter;
+        return new OncePerRequestJwtAuthenticationFilter();
     }
 
     //    @Bean

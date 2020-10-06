@@ -44,9 +44,7 @@ public class StatsRSocketController {
                 response.setStatus(OrderStatus.RECEIVED);
                 log.info("change something");
             }
-            default -> {
-                response.setOrderId(request.getOrderId());
-            }
+            default -> response.setOrderId(request.getOrderId());
         }
 
         response.setCreated(LocalDateTime.now());

@@ -113,6 +113,7 @@ public class MarkerAnnotationProcessorApplicationContextInitializer implements
                                         .getDeclaredField("annotationData");
                                 annotationData.setAccessible(true);
 
+                                //noinspection unchecked
                                 Map<Class<? extends Annotation>, Annotation> map =
                                         (Map<Class<? extends Annotation>, Annotation>) annotationData.get(fields[i]);
 
@@ -184,6 +185,7 @@ public class MarkerAnnotationProcessorApplicationContextInitializer implements
                             Method method = fields[i].getClass().getDeclaredMethod("declaredAnnotations");
                             method.setAccessible(true);
 
+                            //noinspection unchecked
                             Map<Class<? extends Annotation>, Annotation> annotationsMap =
                                     (Map<Class<? extends Annotation>, Annotation>) method.invoke(fields[i]);
 
@@ -240,8 +242,6 @@ public class MarkerAnnotationProcessorApplicationContextInitializer implements
                 });
 
     }
-
-    ;
 
     private FieldMarker createFieldMarkerAnnotation(int position) {
         return new FieldMarker() {
@@ -315,10 +315,10 @@ public class MarkerAnnotationProcessorApplicationContextInitializer implements
         };
     }
 
-    public static Annotation setAttributeValue(Annotation annotation, Class<?> annotationType, String attributeName,
+    public static void setAttributeValue(Annotation annotation, Class<?> annotationType, String attributeName,
             Object newValue) {
         InvocationHandler handler = new AnnotationInvocationHandler(annotation, attributeName, newValue);
-        return (Annotation) Proxy.newProxyInstance(annotation.getClass().getClassLoader(),
+        Proxy.newProxyInstance(annotation.getClass().getClassLoader(),
                 new Class[]{annotationType}, handler);
     }
 
