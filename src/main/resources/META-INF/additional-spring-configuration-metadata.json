@@ -11,8 +11,8 @@
       "description": "Whether or not to enable keycloak for spring security."
     },
     {
-      "name": "application.filter.misc-filter.enable",
-      "type": "java.lang.Boolean",
+      "name": "application.filter.redirect-filter.enable",
+      "type": "java.lang.String",
       "description": "Whether or not to enable the MiscFilter (prpends /api to request path)."
     }
   ] }
