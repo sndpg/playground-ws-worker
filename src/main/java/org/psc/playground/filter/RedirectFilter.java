@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
-@ConditionalOnProperty("application.filter.misc-filter.enable")
+@ConditionalOnProperty("application.filter.redirect-filter.enable")
 @Slf4j
-public class MiscFilter extends OncePerRequestFilter {
+public class RedirectFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
