@@ -15,4 +15,5 @@
       "type": "java.lang.String",
       "description": "Whether or not to enable the MiscFilter (prpends /api to request path)."
     }
-  ] }
+  ]
+}
