@@ -15,7 +15,6 @@ data class User(
 /**
  * Data class to store information data.
  */
-@With
 data class Information(
         var id: Long,
         var name: String,
