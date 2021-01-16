@@ -1,7 +1,5 @@
 package playground.domain
 
-import lombok.With
-
 /**
  * Data class to store user data
  */
