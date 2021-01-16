@@ -14,6 +14,11 @@
       "name": "application.filter.redirect-filter.enable",
       "type": "java.lang.String",
       "description": "Whether or not to enable the MiscFilter (prpends /api to request path)."
+    },
+    {
+      "name": "greeting-message",
+      "type": "java.lang.String",
+      "description": "A message which will be displayed after application startup."
     }
   ]
 }
