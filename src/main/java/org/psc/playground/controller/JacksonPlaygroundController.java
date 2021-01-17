@@ -1,13 +1,15 @@
 package org.psc.playground.controller;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import io.vavr.control.Try;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
+import java.util.function.Function;
 
 @RestController
 @CrossOrigin
@@ -25,7 +29,10 @@ public class JacksonPlaygroundController {
     private final ObjectMapper snakeCasePropertiesObjectMapper;
     private final ObjectMapper customPropertiesObjectMapper;
 
-    public JacksonPlaygroundController(ObjectMapper objectMapper) {
+    private final Resource persons;
+
+    public JacksonPlaygroundController(ObjectMapper objectMapper,
+            @Value("classpath:json-data/persons.json") Resource persons) {
         this.objectMapper = objectMapper;
 
         snakeCasePropertiesObjectMapper = objectMapper.copy()
@@ -35,6 +42,8 @@ public class JacksonPlaygroundController {
         customPropertiesObjectMapper = objectMapper.copy()
                 .configure(MapperFeature.ALLOW_EXPLICIT_PROPERTY_RENAMING, true)
                 .setPropertyNamingStrategy(new CustomMiscDtoPropertyNamingStrategy());
+
+        this.persons = persons;
     }
 
     /**
@@ -84,6 +93,17 @@ public class JacksonPlaygroundController {
         transformTree(tree);
 
         return objectMapper.writeValueAsString(tree);
+    }
+
+    /**
+     * Get all persons saved within persons.json
+     *
+     * @return all persons within persons.json
+     */
+    @GetMapping(value = "records/persons")
+    public List<Person> getPersons() {
+        return Try.of(() -> objectMapper.readValue(persons.getInputStream(), new TypeReference<List<Person>>() {}))
+                .getOrElseThrow((Function<Throwable, IllegalStateException>) IllegalStateException::new);
     }
 
     private void transformTree(Map<String, Object> tree) {
@@ -148,4 +168,19 @@ public class JacksonPlaygroundController {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private LocalDate date;
     }
+
+    public record Person(
+            @JsonProperty("id") int id,
+            @JsonProperty("firstname") String firstname,
+            @JsonProperty("lastname") String lastname,
+            @JsonProperty("score") OptionalInt score,
+            @JsonProperty("emailAddresses") @JsonSetter(nulls = Nulls.AS_EMPTY) List<String> emailAddresses) {
+
+        public Person {
+            if (score.isEmpty()){
+                score = OptionalInt.of(0);
+            }
+        }
+    }
+
 }

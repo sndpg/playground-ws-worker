@@ -273,7 +273,10 @@
                 <configuration>
                     <source>15</source>
                     <target>15</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
+                    <compilerArgs>
+                        <compilerArg>--enable-preview</compilerArg>
+                        <compilerArg>-parameters</compilerArg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
