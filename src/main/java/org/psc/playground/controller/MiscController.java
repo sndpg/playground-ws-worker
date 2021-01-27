@@ -3,6 +3,7 @@ package org.psc.playground.controller;
 import io.woof.database.QueryResolver;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.psc.playground.configuration.WorkerBeanDefinitionRegistryPostProcessor;
 import org.psc.playground.logic.MiscLogic;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import reactor.core.publisher.ReplayProcessor;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.security.Principal;
@@ -34,6 +36,13 @@ public class MiscController {
     private final MiscLogic miscLogic;
 
     private final QueryResolver queryResolver;
+
+    private final WorkerBeanDefinitionRegistryPostProcessor.Oi oi;
+
+    @PostConstruct
+    public void postConstruct(){
+        oi.doSomething();
+    }
 
     @Qualifier("echoParameters")
     private final ReplayProcessor<String> echoParameters;
