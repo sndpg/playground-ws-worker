@@ -116,7 +116,7 @@ public class DynamicPathsController {
      *                               of the current request
      * @param expressionParser       for parsing expressions
      * @param evaluationContext      evaluationContext in which the variable {@code requestParams} has been set with the
-     *                               values of the current requestParams has been set
+     *                               values of the current requestParams
      */
     private void resolveExpression(Set<Map.Entry<String, Object>> responseContentEntries,
             ExpressionParser expressionParser, EvaluationContext evaluationContext) {
