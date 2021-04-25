@@ -20,7 +20,7 @@
         <httpclient.version>4.5.13</httpclient.version>
         <httpcore.version>4.4.14</httpcore.version>
         <commons-lang3.version>3.11</commons-lang3.version>
-        <rxjava.version>2.2.20</rxjava.version>
+        <rxjava.version>3.0.12</rxjava.version>
         <commons-text.version>1.9</commons-text.version>
         <springfox-swagger2.version>3.0.0</springfox-swagger2.version>
         <playground-ws-model.version>1.0.0</playground-ws-model.version>
@@ -35,7 +35,7 @@
             <dependency>
                 <groupId>org.keycloak.bom</groupId>
                 <artifactId>keycloak-adapter-bom</artifactId>
-                <version>11.0.3</version>
+                <version>12.0.4</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -108,7 +108,7 @@
             <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.reactivex.rxjava2</groupId>
+            <groupId>io.reactivex.rxjava3</groupId>
             <artifactId>rxjava</artifactId>
             <version>${rxjava.version}</version>
         </dependency>
