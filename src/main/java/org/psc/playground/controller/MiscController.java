@@ -1,5 +1,8 @@
 package org.psc.playground.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
 import io.woof.database.QueryResolver;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,8 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("service/misc")
+@SwaggerDefinition(tags = {@Tag(name="miscThings", description = "asdasda")})
+@Api(tags = "miscThings", description = "asdasdr")
 public class MiscController {
 
     private final MiscLogic miscLogic;

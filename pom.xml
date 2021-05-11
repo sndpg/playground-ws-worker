@@ -22,7 +22,7 @@
         <commons-lang3.version>3.11</commons-lang3.version>
         <rxjava.version>3.0.12</rxjava.version>
         <commons-text.version>1.9</commons-text.version>
-        <springfox-swagger2.version>3.0.0</springfox-swagger2.version>
+        <springfox-swagger.version>3.0.0</springfox-swagger.version>
         <playground-ws-model.version>1.0.0</playground-ws-model.version>
         <reflections.version>0.9.11</reflections.version>
         <logbook-spring-boot-starter.version>2.4.1</logbook-spring-boot-starter.version>
@@ -121,8 +121,14 @@
 
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${springfox-swagger2.version}</version>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>${springfox-swagger.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox-swagger.version}</version>
         </dependency>
 
         <dependency>
