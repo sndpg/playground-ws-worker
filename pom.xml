@@ -13,21 +13,19 @@
     <name>playground-ws-worker</name>
 
     <properties>
-        <kotlin.version>1.4.30</kotlin.version>
+        <kotlin.version>1.6.21</kotlin.version>
         <spring-cloud.version>2020.0.1</spring-cloud.version>
-        <spring-cloud-contract.version>3.0.0</spring-cloud-contract.version>
+        <spring-cloud-contract.version>3.1.2</spring-cloud-contract.version>
         <playground-spring-boot-starter.version>1.0.0</playground-spring-boot-starter.version>
         <httpclient.version>4.5.13</httpclient.version>
         <httpcore.version>4.4.14</httpcore.version>
-        <commons-lang3.version>3.11</commons-lang3.version>
-        <rxjava.version>3.0.12</rxjava.version>
+        <rxjava.version>3.1.4</rxjava.version>
         <commons-text.version>1.9</commons-text.version>
-        <springfox-swagger.version>3.0.0</springfox-swagger.version>
         <playground-ws-model.version>1.0.0</playground-ws-model.version>
-        <reflections.version>0.9.11</reflections.version>
-        <logbook-spring-boot-starter.version>2.4.1</logbook-spring-boot-starter.version>
+        <reflections.version>0.10.2</reflections.version>
+        <logbook-spring-boot-starter.version>2.14.0</logbook-spring-boot-starter.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
-        <database-tools.version>1.0.0</database-tools.version>
+<!--        <database-tools.version>1.0.0</database-tools.version>-->
     </properties>
 
     <dependencyManagement>
@@ -35,7 +33,7 @@
             <dependency>
                 <groupId>org.keycloak.bom</groupId>
                 <artifactId>keycloak-adapter-bom</artifactId>
-                <version>13.0.1</version>
+                <version>18.0.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -50,11 +48,11 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>io.woof.database</groupId>
-            <artifactId>database-tools</artifactId>
-            <version>${database-tools.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.woof.database</groupId>-->
+<!--            <artifactId>database-tools</artifactId>-->
+<!--            <version>${database-tools.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -100,12 +98,10 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>${httpcore.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>io.reactivex.rxjava3</groupId>
@@ -117,18 +113,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>${commons-text.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-            <version>${springfox-swagger.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${springfox-swagger.version}</version>
         </dependency>
 
         <dependency>
